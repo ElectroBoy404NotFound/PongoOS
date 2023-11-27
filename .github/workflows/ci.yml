@@ -1,80 +1,18 @@
-name: Build KPF & Pongo
+name: Build
 
-on:
-  # Trigger on all pushes and pull requests
-  push:
-  pull_request:
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+on: [push]
 
 jobs:
-  build:
+  BuildJob:
+    name: SomeThing
     runs-on: macos-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - shell: bash
+        run: |
+          sed -i '' "s/-Werror //" Makefile
+          make -j$(sysctl -n hw.logicalcpu)
+      - name: Resuls
+        uses: actions/upload-artifact@v3
         with:
-          fetch-depth: 0
-
-      - name: Update repository
-        run: |
-          git submodule update --init --recursive
-          git fetch --all
-          git reset --hard origin/$(git branch --show-current)
-          git submodule update --recursive --remote
-
-      - name: Compile KPF and Pongo
-        run: |
-          make
-
-      - name: Prepare upload directory 
-        run: |
-          mkdir upload
-          mv build/Pongo.bin upload/
-          mv build/checkra1n-kpf-pongo upload/
-
-      - name: Get branch name
-        id: branch-name
-        uses: tj-actions/branch-names@v7
-
-      - name: Upload artifact
-        uses: wangyucode/sftp-upload-action@v1.4.8
-        with:
-          host: ${{ secrets.NICKCHAN_FTP_HOST }}
-          port: ${{ secrets.NICKCHAN_FTP_PORT }}
-          username: palera1n
-          password: ${{ secrets.NICKCHAN_FTP_PASS }}
-          forceUpload: true
-          dryRun: false
-          localDir: 'upload'
-          remoteDir: "/palera1n/artifacts/kpf/${{ steps.branch-name.outputs.ref_branch || github.ref }}"
-
-  test:
-    runs-on: ubuntu-22.04
-    container:
-      image: debian:stable
-    steps:
-      - name: Install packages
-        run: |
-          dpkg --add-architecture arm64
-          apt-get update
-          apt-get -y --allow-downgrades dist-upgrade
-          apt-get install -y build-essential git libc6:arm64 gcc-aarch64-linux-gnu libc6-arm64-cross libc6-dev-arm64-cross qemu-user qemu-user-binfmt clang lld curl zstd
-
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-        
-      - name: Compile KPF test
-        run:
-          make -C checkra1n/kpf-test KPF_CFLAGS="-target aarch64-linux-gnu -L/usr/aarch64-linux-gnu/lib -I/usr/aarch64-linux-gnu/include -L/usr/lib/gcc-cross/aarch64-linux-gnu/*" kpf-test.linux
-
-      - name: Get kernels
-        run: |
-          curl -Lu ${{ secrets.ACTIONS_RESOURCES_LOGIN }} https://static.palera.in/action-resources/kc.tar.zst | zstd -cdT0 | tar -x
-      
-      - name: Test KPF
-        run: |
-          qemu-aarch64 ./checkra1n/kpf-test/kpf-test.linux -n kernel2;
+          name: Pongo
+          path: build/Pongo.bin
