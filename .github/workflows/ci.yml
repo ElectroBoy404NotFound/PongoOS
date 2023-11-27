@@ -9,6 +9,8 @@ jobs:
     steps:
       - shell: bash
         run: |
+          pwd
+          ls
           sed -i '' "s/-Werror //" Makefile
           make -j$(sysctl -n hw.logicalcpu)
       - name: Upload
