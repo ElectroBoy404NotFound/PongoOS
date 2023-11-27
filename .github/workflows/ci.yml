@@ -4,14 +4,14 @@ on: [push]
 
 jobs:
   BuildJob:
-    name: SomeThing
+    name: Build
     runs-on: macos-latest
     steps:
       - shell: bash
         run: |
           sed -i '' "s/-Werror //" Makefile
           make -j$(sysctl -n hw.logicalcpu)
-      - name: Resuls
+      - name: Upload
         uses: actions/upload-artifact@v3
         with:
           name: Pongo
