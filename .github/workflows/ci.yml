@@ -16,5 +16,5 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
-          name: Pongo
-          path: build/Pongo.bin
+          name: PongoOS
+          path: PongoOS/build/Pongo.bin
