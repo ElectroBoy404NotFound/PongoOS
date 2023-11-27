@@ -9,8 +9,8 @@ jobs:
     steps:
       - shell: bash
         run: |
-          pwd
-          ls
+          git clone https://github.com/ElectroBoy404NotFound/PongoOS
+          cd PongoOS
           sed -i '' "s/-Werror //" Makefile
           make -j$(sysctl -n hw.logicalcpu)
       - name: Upload
