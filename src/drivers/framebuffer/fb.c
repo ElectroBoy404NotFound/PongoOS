@@ -281,21 +281,21 @@ void screen_init() {
     gFramebuffer = (uint32_t*)(0xfb0000000ULL + fboff);
     gFramebufferCopy = (uint32_t*)alloc_contig(fbsize);
 
-    // height &= 0xfff0;
-    // scale_factor = 2;
-    // if (width > 800)
-    //     scale_factor = 3;
+    height &= 0xfff0;
+    scale_factor = 2;
+    if (width > 800)
+        scale_factor = 3;
 
-    // if (width > height) scale_factor = 1;
+    if (width > height) scale_factor = 1;
 
-    // uint32_t logo_scaler_factor = 2 * scale_factor;
-    // if (socnum == 0x8012) logo_scaler_factor = 1;
+    uint32_t logo_scaler_factor = 2 * scale_factor;
+    if (socnum == 0x8012) logo_scaler_factor = 1;
 
-    // uint32_t logo_x_begin = (gRowPixels / 2) - (16 * logo_scaler_factor);
-    // uint32_t logo_y_begin = (height / 2) - (16 * logo_scaler_factor);
+    uint32_t logo_x_begin = (gRowPixels / 2) - (16 * logo_scaler_factor);
+    uint32_t logo_y_begin = (height / 2) - (16 * logo_scaler_factor);
 
-    // uint32_t mask = 0;
-    // uint32_t color = 0xff0000;
+    uint32_t mask = 0;
+    uint32_t color = 0xff0000;
 
     // for (uint32_t y = 0; y < (32 * logo_scaler_factor); ++y) {
     //     uint32_t b = gLogoBitmap[y / logo_scaler_factor];
